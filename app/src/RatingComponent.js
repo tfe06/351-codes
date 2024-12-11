@@ -1,18 +1,48 @@
 import React, { useState, useEffect } from "react";
 
+/**
+ * A component that allows users to rate a product and displays the average rating.
+ *
+ * @param {string} productName - The name of the product being rated.
+ * @param {string} username - The username of the user submitting the rating.
+ * @param {number} averageRating - The average rating of the product.
+ * @param {function} onRatingSubmit - Function to call after a rating is submitted.
+ * @returns {JSX.Element} The RatingComponent component.
+ */
 const RatingComponent = ({ productName, username, averageRating, onRatingSubmit }) => {
+    /**
+     * Tracks the user's rating.
+     * Initially set to 0.
+     *
+     * @type {number}
+     */
     const [userRating, setUserRating] = useState(0);
+    /**
+     * Tracks the average rating of the product.
+     * Initially set to the provided averageRating prop.
+     *
+     * @type {number}
+     */
     const [average, setAverageRating] = useState(averageRating || 0);
 
-    // Sync the average rating whenever the prop changes
     useEffect(() => {
         setAverageRating(averageRating || 0);
     }, [averageRating]);
 
+    /**
+     * Handles the action of clicking a star to set the user's rating.
+     *
+     * @param {number} star - The rating value of the clicked star.
+     */
     const handleStarClick = (star) => {
         setUserRating(star);
     };
 
+    /**
+     * Handles the submission of the user's rating.
+     *
+     * Sends the rating to the server and updates the average rating.
+     */
     const handleSubmitRating = async () => {
         if (!username) {
             alert("You must be logged in to rate products.");

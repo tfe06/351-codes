@@ -3,7 +3,12 @@ import { Box, Typography, TextField, Button, Paper, Stack } from "@mui/material"
 import { styled } from "@mui/material/styles";
 import { sendMessage } from "./socket";
 
-// Styled components for message bubbles
+/**
+ * Styled component for message bubbles.
+ *
+ * @param {object} theme - The theme object provided by Material-UI.
+ * @param {boolean} own - Boolean indicating if the message is sent by the current user.
+ */
 const MessageBubble = styled(Paper)(({ theme, own }) => ({
   padding: theme.spacing(1, 2),
   borderRadius: theme.shape.borderRadius * 2,
@@ -13,16 +18,33 @@ const MessageBubble = styled(Paper)(({ theme, own }) => ({
   color: own ? theme.palette.primary.contrastText : theme.palette.text.primary
 }));
 
-// Container for message alignment
+/**
+ * Styled component for message alignment.
+ *
+ * @param {boolean} own - Boolean indicating if the message is sent by the current user.
+ */
 const MessageContainer = styled('div')(({ own }) => ({
   display: 'flex',
   justifyContent: own ? 'flex-end' : 'flex-start',
 }));
 
+/**
+ * A component that provides a chat interface for users to send and receive messages.
+ *
+ * @param {string} recipient - The recipient of the messages.
+ * @param {string} sender - The sender of the messages.
+ * @param {function} onClose - Function to close the chat box.
+ * @returns {JSX.Element} The ChatBox component.
+ */
 export default function ChatBox({ recipient, sender, onClose }) {
   const [message, setMessage] = useState("");
   const [chatLog, setChatLog] = useState([]);
 
+  /**
+   * Handles sending a message.
+   *
+   * Validates the message, sends it using the sendMessage function, and updates the chat log.
+   */
   const handleSendMessage = () => {
     if (message.trim()) {
       sendMessage(sender, recipient, message);
@@ -30,6 +52,7 @@ export default function ChatBox({ recipient, sender, onClose }) {
       setMessage("");
     }
   };
+
 
   return (
     <Box

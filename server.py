@@ -9,13 +9,21 @@ from response import *
 
 
 def add_cors_headers(response):
-    """Adds CORS headers to all responses."""
+    """Adds CORS headers to all responses.
+
+    :param response: The HTTP response to which CORS headers will be added.
+    :type response: HttpResponse
+    """
     response.set_header("Access-Control-Allow-Origin", "*")
     response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     response.set_header("Access-Control-Allow-Headers", "Content-Type")
 
 def handle_options_request(client_socket):
-    """Handles CORS preflight (OPTIONS) requests."""
+    """Handles CORS preflight (OPTIONS) requests.
+
+    :param client_socket: The client socket.
+    :type client_socket: socket.socket
+    """
     response = (
         "HTTP/1.1 204 No Content\r\n"
         "Access-Control-Allow-Origin: *\r\n"
@@ -28,6 +36,13 @@ def handle_options_request(client_socket):
 
 
 def handle_client(client_socket, address):
+    """Handles incoming client connections and requests.
+
+    :param client_socket: The client socket.
+    :type client_socket: socket.socket
+    :param address: The client's address.
+    :type address: tuple
+    """
     print(f"[SERVER] Connected to {address}")
     try:
         while True:

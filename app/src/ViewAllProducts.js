@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Card, CardMedia, CardContent, Button } from "@mui/material";
 
+/**
+ * A component that fetches and displays all products.
+ *
+ * @returns {JSX.Element} The Products component.
+ */
 export default function Products() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
+    /**
+     * Fetches all products when the component mounts.
+     */
     useEffect(() => {
         fetch("http://127.0.0.1:30000/view_all_products")
             .then((response) => response.json())

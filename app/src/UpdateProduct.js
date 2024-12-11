@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { Button, TextField, Box, Typography, Stack } from "@mui/material";
 
+/**
+ * A component that allows users to update an existing product.
+ *
+ * @param {string} username - The username of the user updating the product.
+ * @param {function} onSnackbarOpen - Function to open a snackbar with a message.
+ * @param {function} onProductChange - Function to handle product changes.
+ * @returns {JSX.Element} The UpdateProduct component.
+ */
 export default function UpdateProduct({ username, onSnackbarOpen , onProductChange}) {
     const [name, setName] = useState("");
     const [picture, setPicture] = useState("");
@@ -9,6 +17,11 @@ export default function UpdateProduct({ username, onSnackbarOpen , onProductChan
     const [quantity, setQuantity] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
+    /**
+     * Handles the product update action.
+     *
+     * Sends a POST request to update the product and updates the state based on the response.
+     */
     const handleUpdateProduct = async () => {
         if (name && picture && price && description && quantity) {
             try {

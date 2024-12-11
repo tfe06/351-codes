@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import { Button, TextField, Box, Typography, Stack, Dialog } from "@mui/material";
 
+/**
+ * A component that allows users to view the buyers of their products.
+ *
+ * @param {string} username - The username of the user viewing the buyers.
+ * @param {function} onClose - Function to close the view buyers dialog.
+ * @param {function} onSnackbarOpen - Function to open a snackbar with a message.
+ * @returns {JSX.Element} The ViewBuyers component.
+ */
 export default function ViewBuyers({ username, onClose, onSnackbarOpen }) {
     const [buyers, setBuyers] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
 
+    /**
+     * Handles the action of viewing buyers.
+     *
+     * Sends a POST request to fetch the buyers and updates the state based on the response.
+     */
     const handleViewBuyers = async () => {
         try {
             const response = await fetch("http://127.0.0.1:30000/view_buyers", {

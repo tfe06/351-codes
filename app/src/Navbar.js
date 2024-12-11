@@ -11,7 +11,7 @@ import {
   Card,
   CardMedia,
   CardContent,
-  Grid,
+  Grid2,
   IconButton,
   Badge,
   Menu,
@@ -75,48 +75,196 @@ const ChatTopBar = styled('div')(({ theme }) => ({
   gap: theme.spacing(1)
 }));
 
+
+/**
+ * The main component for the application's search app bar.
+ *
+ * @returns {JSX.Element} The SearchAppBar component.
+ */
 export default function SearchAppBar() {
+  /**
+   * Tracks the registration state of the user.
+   * Initially set to false.
+   *
+   * @type {boolean}
+   */
   const [isRegistered, setIsRegistered] = useState(false);
+
+  /**
+   * Tracks the login state of the user.
+   * Initially set to false.
+   *
+   * @type {boolean}
+   */
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  /**
+   * Tracks the list of products.
+   * Initially set to an empty array.
+   *
+   * @type {Array<object>}
+   */
   const [products, setProducts] = useState([]);
+
+  /**
+   * Tracks the list of filtered products based on search queries.
+   * Initially set to an empty array.
+   *
+   * @type {Array<object>}
+   */
   const [filteredProducts, setFilteredProducts] = useState([]);
+
+  /**
+   * Tracks the currently selected product.
+   * Initially set to null.
+   *
+   * @type {object|null}
+   */
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  /**
+   * Tracks the state of the currently open dialog.
+   * Initially set to null.
+   *
+   * @type {string|null}
+   */
   const [openDialog, setOpenDialog] = useState(null);
+
+  /**
+   * Tracks the message to be displayed in the snackbar.
+   * Initially set to null.
+   *
+   * @type {object|null}
+   */
   const [snackbarMessage, setSnackbarMessage] = useState(null);
+
+  /**
+   * Tracks the username of the logged-in user.
+   * Initially set to null.
+   *
+   * @type {string|null}
+   */
   const [username, setUsername] = useState(null);
+
+  /**
+   * Tracks the product to be updated.
+   * Initially set to null.
+   *
+   * @type {object|null}
+   */
   const [productToUpdate, setProductToUpdate] = useState(null);
+
+  /**
+   * Tracks the user's shopping cart.
+   * Initially set to the cart stored in local storage or an empty array.
+   *
+   * @type {Array<object>}
+   */
   const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem("cart")) || []);
+
+  /**
+   * Tracks the anchor element for the cart menu.
+   * Initially set to null.
+   *
+   * @type {object|null}
+   */
   const [anchorEl, setAnchorEl] = useState(null);
+
+  /**
+   * Tracks the list of online users.
+   * Initially set to an empty array.
+   *
+   * @type {Array<string>}
+   */
   const [onlineUsers, setOnlineUsers] = useState([]);
 
-  // Chat states
+  /**
+   * Tracks the recipient of the chat messages.
+   * Initially set to null.
+   *
+   * @type {string|null}
+   */
   const [chatRecipient, setChatRecipient] = useState(null);
+
+  /**
+   * Tracks the log of chat messages.
+   * Initially set to an empty array.
+   *
+   * @type {Array<object>}
+   */
   const [chatLog, setChatLog] = useState([]);
+
+  /**
+   * Tracks the current message being typed by the user.
+   * Initially set to an empty string.
+   *
+   * @type {string}
+   */
   const [message, setMessage] = useState("");
+
+  /**
+   * Tracks the messages grouped by user.
+   * Initially set to an empty object.
+   *
+   * @type {object}
+   */
   const [messagesByUser, setMessagesByUser] = useState({});
+
+  /**
+   * Tracks the count of unread messages by user.
+   * Initially set to an empty object.
+   *
+   * @type {object}
+   */
   const [unreadCountsByUser, setUnreadCountsByUser] = useState({});
+
+  /**
+   * Tracks the state of the chat users dialog.
+   * Initially set to false.
+   *
+   * @type {boolean}
+   */
   const [chatUsersDialog, setChatUsersDialog] = useState(false);
 
+  /**
+ * Opens a snackbar with a message.
+ *
+ * @param {string} message - The message to be displayed in the snackbar.
+ * @param {string} [severity="success"] - The severity level of the message.
+ */
   const openSnackbar = (message, severity = "success") => {
     setSnackbarMessage({ message, severity });
   };
 
+  /**
+   * Closes the snackbar.
+   */
   const closeSnackbar = () => {
     setSnackbarMessage(null);
   };
-
+  /**
+  * Handles the action of closing the dialog.
+  */
   const handleDialogClose = () => {
     setOpenDialog(null);
     setSelectedProduct(null);
     setProductToUpdate(null);
   };
 
+  /**
+  * Handles the action after a successful registration.
+  */
   const handleRegisterSuccess = () => {
     setIsRegistered(true);
     setOpenDialog(null);
     openSnackbar("Registration successful!", "success");
   };
 
+  /**
+   * Handles the action after a successful login.
+   *
+   * @param {string} newUsername - The username of the logged-in user.
+   */
   const handleLoginSuccess = (newUsername) => {
     setUsername(newUsername);
     setIsLoggedIn(true);
@@ -124,6 +272,12 @@ export default function SearchAppBar() {
     openSnackbar("Login successful!", "success");
     fetchProducts();
 
+    /**
+     * Initializes the WebSocket connection and handles incoming messages.
+     *
+     * @param {string} newUsername - The username of the logged-in user.
+     * @param {function} callback - The callback function to handle incoming WebSocket messages.
+     */
     initializeWebSocket(newUsername, (data) => {
       if (data.action === "update_online_users") {
         setOnlineUsers(data.online_users);
@@ -137,10 +291,8 @@ export default function SearchAppBar() {
         });
 
         if (data.sender === chatRecipient) {
-          // If currently chatting, show message immediately
           setChatLog((prevLog) => [...prevLog, { sender: data.sender, message: data.message }]);
         } else {
-          // Increment unread message count for this sender
           setUnreadCountsByUser((prev) => {
             const currentCount = prev[data.sender] || 0;
             return { ...prev, [data.sender]: currentCount + 1 };
@@ -150,7 +302,11 @@ export default function SearchAppBar() {
     });
   };
 
+  /**
+   * Handles the action after a successful logout.
+   */
   const handleLogoutSuccess = () => {
+    closeWebSocket();
     setIsLoggedIn(false);
     setUsername(null);
     setOpenDialog(null);
@@ -162,9 +318,15 @@ export default function SearchAppBar() {
     setMessagesByUser({});
     setUnreadCountsByUser({});
     openSnackbar("Logout successful!", "success");
-     // This will signal the server that the user disconnected
   };
 
+  /**
+   * Fetches the list of products from the server.
+   *
+   * Only fetches products if the user is logged in.
+   * Updates the products and filtered products state with the fetched data.
+   * Displays an error message if the fetch operation fails.
+   */
   const fetchProducts = async () => {
     if (!isLoggedIn) return; // Only fetch if logged in
     try {
@@ -185,6 +347,13 @@ export default function SearchAppBar() {
     }
   };
 
+  /**
+   * Handles the search functionality.
+   *
+   * Filters the products based on the search query and updates the filtered products state.
+   *
+   * @param {string} query - The search query entered by the user.
+   */
   const handleSearch = (query) => {
     if (!query.trim()) {
       setFilteredProducts(products);
@@ -197,21 +366,46 @@ export default function SearchAppBar() {
     setFilteredProducts(results);
   };
 
+  /**
+   * Handles the action of updating a product.
+   *
+   * Sets the product to be updated and opens the update product dialog.
+   *
+   * @param {object} product - The product to be updated.
+   */
   const handleUpdateProduct = (product) => {
     setProductToUpdate(product);
     setOpenDialog("updateProduct");
   };
 
+  /**
+   * Handles the action of clicking the cart icon.
+   *
+   * Sets the anchor element for the cart menu.
+   *
+   * @param {object} event - The event object from the cart icon click.
+   */
   const handleCartClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  /**
+   * Handles the action of closing the cart menu.
+   *
+   * Resets the anchor element for the cart menu.
+   */
   const handleCartClose = () => {
     setAnchorEl(null);
   };
 
+  /**
+   * Adds a product to the cart.
+   *
+   * Prevents adding the user's own product to the cart and shows a warning message.
+   *
+   * @param {object} product - The product to be added to the cart.
+   */
   const addToCart = (product) => {
-    // Prevent adding own product to cart
     if (product.username === username) {
       openSnackbar("You cannot add your own product to the cart.", "warning");
       return;
@@ -230,6 +424,12 @@ export default function SearchAppBar() {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
+  /**
+   * Updates the quantity of a product in the cart.
+   *
+   * @param {string} productName - The name of the product to update.
+   * @param {number} newQuantity - The new quantity of the product.
+   */
   const updateQuantity = (productName, newQuantity) => {
     if (newQuantity < 1) return;
     const updatedCart = cart.map((product) =>
@@ -239,12 +439,20 @@ export default function SearchAppBar() {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
+  /**
+   * Removes a product from the cart.
+   *
+   * @param {string} productName - The name of the product to remove.
+   */
   const removeFromCart = (productName) => {
     const updatedCart = cart.filter((item) => item.name !== productName);
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
+  /**
+   * Handles the action of buying all products in the cart.
+   */
   const handleCartBuyNow = async () => {
     try {
       for (const product of cart) {
@@ -268,7 +476,6 @@ export default function SearchAppBar() {
       localStorage.removeItem("cart");
       openSnackbar("All products purchased successfully!", "success");
 
-      // Refetch products to reflect the updated quantities immediately
       await fetchProducts();
     } catch (error) {
       console.error("Error during purchase:", error);
@@ -276,16 +483,32 @@ export default function SearchAppBar() {
     }
   };
 
+  /**
+   * Calculates the total number of unread messages.
+   *
+   * @returns {number} The total number of unread messages.
+   */
   const totalUnread = Object.values(unreadCountsByUser).reduce((sum, count) => sum + count, 0);
 
+  /**
+   * Opens the dialog showing online users.
+   */
   const openChatUsersDialog = () => {
     setChatUsersDialog(true);
   };
 
+  /**
+   * Close the dialog showing online users.
+   */
   const closeChatUsersDialog = () => {
     setChatUsersDialog(false);
   };
 
+  /**
+   * Handles the action of starting a chat with a recipient.
+   *
+   * @param {string} recipient - The recipient of the chat messages.
+   */
   const handleStartChat = (recipient) => {
     setChatRecipient(recipient);
     setChatLog(messagesByUser[recipient] || []);
@@ -299,6 +522,9 @@ export default function SearchAppBar() {
     closeChatUsersDialog();
   };
 
+  /**
+   * Handles the action of sending a message.
+   */
   const handleSendMessage = () => {
     if (!isRecipientOnline()) {
       return;
@@ -320,12 +546,18 @@ export default function SearchAppBar() {
     }
   };
 
-  // Check if the currently chatting recipient is online
+  /**
+   * Checks if the currently chatting recipient is online.
+   *
+   * @returns {boolean} True if the recipient is online, false otherwise.
+   */
   const isRecipientOnline = () => {
     return onlineUsers.includes(chatRecipient);
   };
 
-  // If recipient goes offline after we started chatting, show a system message
+  /**
+   * Effect hook that shows a system message if the recipient goes offline after starting a chat.
+   */
   useEffect(() => {
     if (chatRecipient && !isRecipientOnline()) {
       const alreadyNotified = chatLog.some(
@@ -340,6 +572,9 @@ export default function SearchAppBar() {
     }
   }, [onlineUsers, chatRecipient, chatLog]);
 
+  /**
+   * Effect hook that fetches products when the user logs in.
+   */
   useEffect(() => {
     if (isLoggedIn) {
       fetchProducts();
@@ -602,9 +837,9 @@ export default function SearchAppBar() {
           </Typography>
         ) : (
           isLoggedIn && (
-            <Grid container spacing={2}>
+            <Grid2 container spacing={2}>
               {filteredProducts.map((product) => (
-                <Grid item xs={12} sm={6} md={4} key={product.name}>
+                <Grid2 item xs={12} sm={6} md={4} key={product.name}>
                   <Card
                     sx={{
                       display: "flex",
@@ -675,9 +910,9 @@ export default function SearchAppBar() {
                       </Button>
                     )}
                   </Card>
-                </Grid>
+                </Grid2>
               ))}
-            </Grid>
+            </Grid2>
           )
         )}
       </Box>

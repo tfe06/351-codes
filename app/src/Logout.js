@@ -1,11 +1,22 @@
 import React, { useState } from "react";
 import { Button, Box, Typography, Stack, CircularProgress } from "@mui/material";
 
+/**
+ * A component that allows users to log out of the application.
+ *
+ * @param {function} onSuccessfulLogout - Function to handle actions after a successful logout.
+ * @returns {JSX.Element} The Logout component.
+ */
 export default function Logout({ onSuccessfulLogout }) {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const url = "http://127.0.0.1:30000";
 
+    /**
+     * Handles the logout action.
+     *
+     * Retrieves user information from local storage, sends a POST request to log out, and updates the state based on the response.
+     */
     const handleLogout = async () => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         if (!userInfo) {
@@ -37,8 +48,7 @@ export default function Logout({ onSuccessfulLogout }) {
                 setErrorMessage(errorData.message || "Logout failed.");
             }
         } catch (error) {
-            console.error("Error during logout:", error);
-            setErrorMessage("An error occurred during logout. Please try again.");
+            setErrorMessage("An error occurred. Please try again.");
         } finally {
             setIsLoading(false);
         }

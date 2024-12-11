@@ -2,6 +2,14 @@ import React from "react";
 import { Box, Typography, Card, CardMedia, CardContent } from "@mui/material";
 import RatingComponent from "./RatingComponent"; // Import RatingComponent once
 
+/**
+ * A component that displays a list of products.
+ *
+ * @param {Array<object>} products - An array of product objects to be displayed.
+ * @param {string} username - The username of the logged-in user.
+ * @param {function} fetchProducts - Function to fetch the list of products.
+ * @returns {JSX.Element} The Products component.
+ */
 export default function Products({ products, username, fetchProducts }) {
     if (!products || products.length === 0) {
         return (

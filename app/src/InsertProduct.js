@@ -1,7 +1,22 @@
 import React, { useState } from "react";
 import { Button, Dialog, TextField, Stack, Typography } from "@mui/material";
 
+/**
+ * A component that allows users to insert a new product.
+ *
+ * @param {string} username - The username of the user adding the product.
+ * @param {function} onSnackbarOpen - Function to open a snackbar with a message.
+ * @param {function} onClose - Function to close the insert product dialog.
+ * @param {function} onProductChange - Function to handle product changes.
+ * @returns {JSX.Element} The InsertProduct component.
+ */
 export default function InsertProduct({ username, onSnackbarOpen, onClose, onProductChange }) {
+    /**
+     * Tracks the data of the product to be inserted.
+     * Initially set to an object with empty fields for name, picture, price, description, and quantity.
+     *
+     * @type {object}
+     */
     const [productData, setProductData] = useState({
         name: "",
         picture: "",
@@ -9,13 +24,32 @@ export default function InsertProduct({ username, onSnackbarOpen, onClose, onPro
         description: "",
         quantity: "",
     });
+
+    /**
+     * Tracks the error message if the request fails.
+     * Initially set to an empty string.
+     *
+     * @type {string}
+     */
     const [errorMessage, setErrorMessage] = useState("");
 
+    /**
+     * Handles changes to the input fields.
+     *
+     * Updates the productData state with the new values.
+     *
+     * @param {object} e - The event object from the input field.
+     */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setProductData((prev) => ({ ...prev, [name]: value }));
     };
 
+    /**
+     * Handles the submission of the product data.
+     *
+     * Validates the input fields, sends a POST request to add the product, and updates the state based on the response.
+     */
     const handleSubmit = async () => {
         if (!productData.name || !productData.picture || !productData.price || !productData.description || !productData.quantity) {
             onSnackbarOpen("All fields are required.", "error");
@@ -32,7 +66,7 @@ export default function InsertProduct({ username, onSnackbarOpen, onClose, onPro
                 onSnackbarOpen("Product added successfully!", "success");
                 onProductChange();
                 onClose();
-                setProductData({ name: "", picture: "", price: "", description: "" , quantity: ""});
+                setProductData({ name: "", picture: "", price: "", description: "", quantity: "" });
             } else {
                 setErrorMessage(data.message || "Failed to add product.");
             }

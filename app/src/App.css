@@ -1,18 +1,48 @@
+/*
+_summary_
+
+:param a: The main container for the application. Centers the text within the container.
+:type a: .App
+*/
 .App {
   text-align: center;
 }
 
+/*
+_summary_
+
+:param a: Styles for the application logo. Sets the height and disables pointer events.
+:type a: .App-logo
+*/
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
 
+/*
+_summary_
+
+:param a: Applies animation to the application logo if the user has no preference for reduced motion.
+:type a: @media (prefers-reduced-motion: no-preference)
+*/
 @media (prefers-reduced-motion: no-preference) {
+  /*
+  _summary_
+
+  :param a: Adds a spinning animation to the application logo.
+  :type a: .App-logo
+  */
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/*
+_summary_
+
+:param a: Styles for the application header.
+:type a: .App-header
+*/
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -24,10 +54,22 @@
   color: white;
 }
 
+/*
+_summary_
+
+:param a: Styles for links within the application. Sets the link color.
+:type a: .App-link
+*/
 .App-link {
   color: #61dafb;
 }
 
+/*
+_summary_
+
+:param a: Defines the keyframes for the spinning animation of the application logo.
+:type a: @keyframes App-logo-spin
+*/
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

@@ -3,14 +3,17 @@ from request import *
 from response import *
 from product import *
 from user import *
-import threading
+from dict import *
 import json
 
-online_users = {}
-online_users_lock = threading.Lock()
-
 def register_handler(request):
-    """Handles user registration."""
+    """Handles user registration.
+
+    :param request: The HTTP request containing user registration data.
+    :type request: HttpRequest
+    :return: The HTTP response indicating the result of the registration process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:
@@ -50,7 +53,15 @@ def register_handler(request):
 
 
 def login_handler(request, client_address):
-    """Handles user login."""
+    """Handles user login.
+
+    :param request: The HTTP request containing user login data.
+    :type request: HttpRequest
+    :param client_address: The client's IP address and port.
+    :type client_address: tuple
+    :return: The HTTP response indicating the result of the login process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:
@@ -109,7 +120,13 @@ def login_handler(request, client_address):
 
 
 def logout_handler(request):
-    """Handles user logout."""
+    """Handles user logout.
+
+    :param request: The HTTP request containing user logout data.
+    :type request: HttpRequest
+    :return: The HTTP response indicating the result of the logout process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     try:
         body = json.loads(request.split("\r\n\r\n")[1])

@@ -1,10 +1,42 @@
 import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Stack } from "@mui/material";
 
+/**
+ * A component that allows users to check if a specific user is online.
+ *
+ * @returns {JSX.Element} The CheckUserOnline component.
+ */
 export default function CheckUserOnline() {
+  /**
+   * Tracks the username to be checked.
+   * Initially set to an empty string.
+   *
+   * @type {string}
+   */
   const [username, setUsername] = useState("");
+
+  /**
+   * Tracks the status message returned from the server.
+   * Initially set to an empty string.
+   *
+   * @type {string}
+   */
   const [statusMessage, setStatusMessage] = useState("");
+
+  /**
+   * Tracks the error message if the request fails.
+   * Initially set to an empty string.
+   *
+   * @type {string}
+   */
   const [errorMessage, setErrorMessage] = useState("");
+
+  /**
+   * Handles the action of checking if a user is online.
+   *
+   * Sends a POST request to the server with the username.
+   * Updates the status or error message based on the server response.
+   */
   const handleCheckOnline = async () => {
     try {
       console.log("Sending request with username:", username); // Debug log

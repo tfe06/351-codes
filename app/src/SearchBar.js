@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { TextField, Box, Button } from "@mui/material";
 
+/**
+ * A component that provides a search bar for searching products.
+ *
+ * @param {function} onSearch - Function to handle the search action.
+ * @returns {JSX.Element} The SearchBar component.
+ */
 export default function SearchBar({ onSearch }) {
     const [searchQuery, setSearchQuery] = useState("");
 
+    /**
+     * Handles the search action.
+     */
     const handleSearch = () => {
         onSearch(searchQuery);
     };

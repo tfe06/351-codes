@@ -6,7 +6,13 @@ from user import *
 import json
 
 def view_buyers_handler(request):
-    """Handles viewing buyers of a user's products."""
+    """Handles viewing buyers of a user's products.
+
+    :param request: The HTTP request containing the seller's username.
+    :type request: HttpRequest
+    :return: The HTTP response containing the list of buyers or an error message.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:

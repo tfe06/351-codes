@@ -4,10 +4,17 @@ from response import *
 from product import *
 from user import *
 from Authentication import *
+from dict import *
 import json
 
 def insert_product_handler(request):
-    """Handles adding a product."""
+    """Handles adding a product.
+
+    :param request: The HTTP request containing product data.
+    :type request: HttpRequest
+    :return: The HTTP response indicating the result of the product insertion process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:
@@ -44,7 +51,15 @@ def insert_product_handler(request):
 
 
 def remove_product_handler(request, client_address):
-    """Handles removing a product with validation."""
+    """Handles removing a product with validation.
+
+    :param request: The HTTP request containing product data.
+    :type request: HttpRequest
+    :param client_address: The client's IP address and port.
+    :type client_address: tuple
+    :return: The HTTP response indicating the result of the product removal process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:
@@ -77,7 +92,15 @@ def remove_product_handler(request, client_address):
 
 
 def update_product_handler(request, client_address):
-    """Handles updating a product with validation."""
+    """Handles updating a product with validation.
+
+    :param request: The HTTP request containing product data.
+    :type request: HttpRequest
+    :param client_address: The client's IP address and port.
+    :type client_address: tuple
+    :return: The HTTP response indicating the result of the product update process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:
@@ -113,6 +136,13 @@ def update_product_handler(request, client_address):
 
 
 def buy_product_handler(request):
+    """Handles purchasing a product.
+
+    :param request: The HTTP request containing product purchase data.
+    :type request: HttpRequest
+    :return: The HTTP response indicating the result of the product purchase process.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
 
@@ -153,6 +183,12 @@ def buy_product_handler(request):
 
 
 def view_all_products_handler():
+    """
+    Handles retrieving all products from the database.
+
+    :return: The HTTP response containing the list of all products or an error message.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
     try:
@@ -183,12 +219,17 @@ def view_all_products_handler():
     return response
 
 def search_product_handler(request):
-    """Handles searching for products."""
+    """Handles searching for products.
+
+    :param request: The HTTP request containing the search query.
+    :type request: HttpRequest
+    :return: The HTTP response containing the search results or an error message.
+    :rtype: HttpResponse
+    """
     response = HttpResponse()
     conn = connect_to_database()
 
     try:
-        # Extract search query from request
         body = json.loads(request.split("\r\n\r\n")[1])
         query = body.get("query", "").strip()
 
@@ -237,24 +278,26 @@ def rate_product_handler(request):
     """
     Handles rating a product by a user.
     Adds or updates the rating and recalculates the average rating for the product.
+
+    :param request: The HTTP request containing product rating data.
+    :type request: HttpRequest
+    :return: The HTTP response indicating the result of the product rating process.
+    :rtype: HttpResponse
     """
     response = HttpResponse()
     conn = sqlite3.connect("auboutique.db")
 
     try:
-        # Parse the request body
         body = json.loads(request.split("\r\n\r\n")[1])
         product_name = body.get("product_name")
         username = body.get("username")
         rating = body.get("rating")
 
-        # Debug: Log received data
         print("[DEBUG] Received data in rate_product_handler:", flush=True)
         print(f"Product Name: {product_name}", flush=True)
         print(f"Username: {username}", flush=True)
         print(f"Rating: {rating}", flush=True)
 
-        # Validation
         if not all([product_name, username, rating]):
             response.set_status_code(400)
             response.set_body(json.dumps({"message": "Missing required fields"}))
@@ -269,7 +312,6 @@ def rate_product_handler(request):
 
         cursor = conn.cursor()
 
-        # Check if the user has already rated the product
         print(f"[DEBUG] Checking if user '{username}' has already rated product '{product_name}'...", flush=True)
         cursor.execute(
             "SELECT id FROM Ratings WHERE product_name = ? AND username = ?",
@@ -278,21 +320,18 @@ def rate_product_handler(request):
         existing_rating = cursor.fetchone()
 
         if existing_rating:
-            # Update the existing rating
             print(f"[DEBUG] User '{username}' already rated '{product_name}'. Updating rating...", flush=True)
             cursor.execute(
                 "UPDATE Ratings SET rating = ? WHERE id = ?",
                 (rating, existing_rating[0]),
             )
         else:
-            # Insert a new rating
             print(f"[DEBUG] Inserting new rating for user '{username}' on product '{product_name}'...", flush=True)
             cursor.execute(
                 "INSERT INTO Ratings (product_name, username, rating) VALUES (?, ?, ?)",
                 (product_name, username, rating),
             )
 
-        # Calculate the new average rating for the product
         print(f"[DEBUG] Calculating new average rating for product '{product_name}'...", flush=True)
         cursor.execute(
             "SELECT AVG(rating) FROM Ratings WHERE product_name = ?",
@@ -301,18 +340,15 @@ def rate_product_handler(request):
         new_average = cursor.fetchone()[0] or 0
         print(f"[DEBUG] New average rating for '{product_name}': {new_average:.2f}", flush=True)
 
-        # Update the product table with the new average rating
         print(f"[DEBUG] Updating Products table with the new average rating for '{product_name}'...", flush=True)
         cursor.execute(
             "UPDATE Products SET average_rating = ? WHERE name = ?",
             (round(new_average, 2), product_name),
         )
 
-        # Commit changes
         conn.commit()
         print("[DEBUG] Rating successfully updated and committed to the database.", flush=True)
 
-        # Send the new average rating back to the client
         response.set_status_code(201)
         response.set_body(json.dumps({
             "message": "Rating submitted successfully",

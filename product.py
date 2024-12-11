@@ -8,6 +8,23 @@ def connect_to_database() -> sqlite3.Connection:
 def insertProducts(username, name, picture, price, description, quantity, conn: sqlite3.Connection):
     """
     Inserts a new product into the database.
+
+    :param username: The username of the user adding the product.
+    :type username: str
+    :param name: The name of the product.
+    :type name: str
+    :param picture: The URL of the product's picture.
+    :type picture: str
+    :param price: The price of the product.
+    :type price: float
+    :param description: The description of the product.
+    :type description: str
+    :param quantity: The quantity of the product.
+    :type quantity: int
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :return: True if the product was successfully inserted, False otherwise.
+    :rtype: bool
     """
     try:
         cursor = conn.cursor()
@@ -29,11 +46,23 @@ def insertProducts(username, name, picture, price, description, quantity, conn: 
 def buyProducts(name, buyer_username, quantity_to_buy, conn: sqlite3.Connection, online_users):
     """
     Handles purchasing a product.
+
+    :param name: The name of the product to be purchased.
+    :type name: str
+    :param buyer_username: The username of the buyer.
+    :type buyer_username: str
+    :param quantity_to_buy: The quantity of the product to be purchased.
+    :type quantity_to_buy: int
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :param online_users: The dictionary of online users.
+    :type online_users: dict
+    :return: True if the purchase was successful, False otherwise.
+    :rtype: bool
     """
     try:
         cursor = conn.cursor()
 
-        # Fetch product information
         cursor.execute("SELECT username, quantity FROM Products WHERE name = ?", (name,))
         product = cursor.fetchone()
 
@@ -43,12 +72,10 @@ def buyProducts(name, buyer_username, quantity_to_buy, conn: sqlite3.Connection,
 
         seller_username, current_quantity = product
 
-        # Validate quantity
         if quantity_to_buy > current_quantity:
             print("[SERVER] Requested quantity exceeds available stock")
             return False
 
-        # Check if buyer is online
         if buyer_username not in online_users:
             print("[SERVER] Buyer is not a valid online user")
             return False
@@ -57,13 +84,11 @@ def buyProducts(name, buyer_username, quantity_to_buy, conn: sqlite3.Connection,
             print("[SERVER] Buyer cannot be the same as the seller")
             return False
 
-        # Insert purchase record
         cursor.execute(
             "INSERT INTO Purchases (product_name, buyer_username, seller_username) VALUES (?, ?, ?)",
             (name, buyer_username, seller_username),
         )
 
-        # Update or remove the product stock
         if quantity_to_buy == current_quantity:
             cursor.execute("DELETE FROM Products WHERE name = ?", (name,))
         else:
@@ -83,6 +108,19 @@ def buyProducts(name, buyer_username, quantity_to_buy, conn: sqlite3.Connection,
 def removeProducts(username, name, conn: sqlite3.Connection, client_address, online_users):
     """
     Removes a product from the database.
+
+    :param username: The username of the user removing the product.
+    :type username: str
+    :param name: The name of the product to be removed.
+    :type name: str
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :param client_address: The client's IP address and port.
+    :type client_address: tuple
+    :param online_users: The dictionary of online users.
+    :type online_users: dict
+    :return: True if the product was successfully removed, False otherwise.
+    :rtype: bool
     """
     try:
         if username not in online_users or online_users[username]["ip"] != client_address[0]:
@@ -109,6 +147,27 @@ def removeProducts(username, name, conn: sqlite3.Connection, client_address, onl
 def updateProducts(username, name, picture, price, description, quantity, conn: sqlite3.Connection, client_address, online_users):
     """
     Updates product information.
+
+    :param username: The username of the user updating the product.
+    :type username: str
+    :param name: The name of the product to be updated.
+    :type name: str
+    :param picture: The URL of the product's picture.
+    :type picture: str
+    :param price: The price of the product.
+    :type price: float
+    :param description: The description of the product.
+    :type description: str
+    :param quantity: The quantity of the product.
+    :type quantity: int
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :param client_address: The client's IP address and port.
+    :type client_address: tuple
+    :param online_users: The dictionary of online users.
+    :type online_users: dict
+    :return: True if the product was successfully updated, False otherwise.
+    :rtype: bool
     """
     try:
         if username not in online_users or online_users[username]["ip"] != client_address[0]:
@@ -142,6 +201,13 @@ def updateProducts(username, name, picture, price, description, quantity, conn: 
 def getProducts(conn: sqlite3.Connection, username: str):
     """
     Retrieves all products listed by a specific user.
+
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :param username: The username of the user whose products are to be retrieved.
+    :type username: str
+    :return: A list of products listed by the user, or None if an error occurs.
+    :rtype: list or None
     """
     try:
         cursor = conn.cursor()
@@ -155,6 +221,11 @@ def getProducts(conn: sqlite3.Connection, username: str):
 def getAllProducts(conn: sqlite3.Connection):
     """
     Retrieves all products from the database.
+
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :return: A list of all products, or None if an error occurs.
+    :rtype: list or None
     """
     try:
         cursor = conn.cursor()
@@ -168,18 +239,22 @@ def getAllProducts(conn: sqlite3.Connection):
 def updateAverageRating(product_name, conn: sqlite3.Connection):
     """
     Updates the average rating for a product.
+
+    :param product_name: The name of the product whose average rating is to be updated.
+    :type product_name: str
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :return: None
     """
     try:
         cursor = conn.cursor()
 
-        # Calculate the new average rating
         cursor.execute(
             "SELECT AVG(rating) FROM Ratings WHERE product_name = ?",
             (product_name,),
         )
         new_average = cursor.fetchone()[0] or 0
 
-        # Update the product table
         cursor.execute(
             "UPDATE Products SET average_rating = ? WHERE name = ?",
             (new_average, product_name),
@@ -193,6 +268,13 @@ def updateAverageRating(product_name, conn: sqlite3.Connection):
 def viewBuyers(seller_username, conn: sqlite3.Connection):
     """
     Retrieves a list of buyers for a seller's products.
+
+    :param seller_username: The username of the seller.
+    :type seller_username: str
+    :param conn: The database connection.
+    :type conn: sqlite3.Connection
+    :return: A list of buyers for the seller's products.
+    :rtype: list
     """
     try:
         cursor = conn.cursor()

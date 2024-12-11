@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, Card, CardContent, Stack } from "@mui/material";
 
+/**
+ * A component that allows users to search for products.
+ *
+ * @returns {JSX.Element} The SearchProducts component.
+ */
 export default function SearchProducts() {
     const [searchQuery, setSearchQuery] = useState("");
     const [products, setProducts] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
 
+    /**
+     * Handles the search action.
+     *
+     * Sends a POST request to search for products and updates the state based on the response.
+     */
     const handleSearch = async () => {
         if (!searchQuery.trim()) {
             setErrorMessage("Search query is required.");

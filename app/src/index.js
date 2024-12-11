@@ -1,21 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';  // Import App component where CurrencyConverter is used
+import App from './App';  
 import reportWebVitals from './reportWebVitals';
-import SearchAppBar from './Navbar';  // Import your Navbar component
+import SearchAppBar from './Navbar';  
 import { createTheme } from "@mui/material";
 import { green } from "@mui/material/colors";
 import { ThemeProvider } from '@emotion/react';
 
-// Create a theme with Material UI
+/**
+ * Creates a theme with Material UI.
+ *
+ * Sets the primary color to green.
+ */
 const theme = createTheme({
     palette: {
         primary: green,  // Set the primary color to green
     },
 });
 
+/**
+ * The root element where the React application will be rendered.
+ */
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+/**
+ * Renders the React application.
+ *
+ * Wraps the application in React.StrictMode and ThemeProvider to apply the custom theme.
+ * Renders the SearchAppBar component at the top and the main App component.
+ */
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
@@ -25,5 +39,7 @@ root.render(
   </React.StrictMode>
 );
 
-// Performance measuring (optional)
+/**
+ * Optional function to measure performance.
+ */
 reportWebVitals();

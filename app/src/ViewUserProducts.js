@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { Button, TextField, Box, Typography, Stack, Card, CardContent } from "@mui/material";
 
+/**
+ * A component that allows users to view products of a specific user.
+ *
+ * @returns {JSX.Element} The ViewUserProducts component.
+ */
 export default function ViewUserProducts() {
     const [username, setUsername] = useState("");
     const [products, setProducts] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
 
+    /**
+     * Handles the action of viewing user products.
+     *
+     * Sends a POST request to fetch the products of the specified user and updates the state based on the response.
+     */
     const handleViewUserProducts = async () => {
     
         if (username) {

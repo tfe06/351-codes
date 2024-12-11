@@ -1,12 +1,25 @@
 import React, { useState } from "react";
 import { Button, TextField, Box, Typography, Stack, CircularProgress } from "@mui/material";
 
+/**
+ * A component that allows users to log in to the application.
+ *
+ * @param {function} onSuccessfulLogin - Function to handle actions after a successful login.
+ * @param {function} fetchProducts - Function to fetch products after login.
+ * @param {string} [errorMessage=""] - Optional error message to display.
+ * @returns {JSX.Element} The Login component.
+ */
 export default function Login({ onSuccessfulLogin, fetchProducts, errorMessage = "" }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setErrorMessage] = useState("");
 
+    /**
+     * Sends the login information to the server.
+     *
+     * Validates the input fields, sends a POST request to log in, and updates the state based on the response.
+     */
     async function sendLoginInfo() {
         if (username.trim() && password.trim()) {
             setIsLoading(true);

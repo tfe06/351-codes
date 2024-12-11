@@ -1,11 +1,17 @@
 let socket = null;
 
+/**
+ * Initializes the WebSocket connection and handles incoming messages.
+ *
+ * @param {string} username - The username of the logged-in user.
+ * @param {function} onMessageHandler - The callback function to handle incoming WebSocket messages.
+ * @returns {WebSocket} The WebSocket connection.
+ */
 export const initializeWebSocket = (username, onMessageHandler) => {
     socket = new WebSocket("ws://127.0.0.1:30001");
     
     socket.onopen = () => {
         console.log("WebSocket connection established.");
-        // Register the username with the server
         const payload = {
             action: "register_username",
             username: username
@@ -30,6 +36,13 @@ export const initializeWebSocket = (username, onMessageHandler) => {
     return socket;
 };
 
+/**
+ * Sends a message through the WebSocket connection.
+ *
+ * @param {string} sender - The username of the sender.
+ * @param {string} recipient - The username of the recipient.
+ * @param {string} message - The message to be sent.
+ */
 export const sendMessage = (sender, recipient, message) => {
     const payload = {
         action: "send_message",
@@ -44,8 +57,12 @@ export const sendMessage = (sender, recipient, message) => {
     }
 };
 
+/**
+ * Closes the WebSocket connection.
+ */
 export const closeWebSocket = () => {
     if (socket) {
         socket.close();
+        socket = null;
     }
 };

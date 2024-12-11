@@ -8,10 +8,30 @@ import {
 import React, {useState} from "react";
 import CurrencyConverterTool from './CurrencySwitcher';
 
+/**
+ * A component that allows users to buy a product.
+ *
+ * @param {object} product - The product to be purchased.
+ * @param {function} onSnackbarOpen - Function to open a snackbar with a message.
+ * @param {function} onClose - Function to close the buy product dialog.
+ * @param {function} onProductChange - Function to handle product changes.
+ * @param {string} username - The username of the buyer.
+ * @returns {JSX.Element} The BuyProduct component.
+ */
 export default function BuyProduct({ product, onSnackbarOpen, onClose, onProductChange, username }) {
+    /**
+     * Tracks the quantity of the product to be purchased.
+     * Initially set to 0.
+     *
+     * @type {number}
+     */
     const [quantityToBuy, setQuantityToBuy] = useState(0);
 
-
+    /**
+     * Handles the product purchase action.
+     *
+     * Validates the product and quantity, then sends a POST request to purchase the product.
+     */
     const handleBuyProduct = async () => {
         if (!product || !quantityToBuy || quantityToBuy < 1) {
             onSnackbarOpen("Invalid product or quantity.", "error");
@@ -38,8 +58,7 @@ export default function BuyProduct({ product, onSnackbarOpen, onClose, onProduct
                 onSnackbarOpen(data.message || "Failed to purchase product.", "error");
             }
         } catch (error) {
-            console.error("Error purchasing product:", error);
-            onSnackbarOpen("An error occurred during purchase.", "error");
+            onSnackbarOpen("An error occurred while purchasing the product.", "error");
         }
     };
 
